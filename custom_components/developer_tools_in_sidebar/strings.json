@@ -4,7 +4,7 @@
     "step": {
       "user": {
         "title": "Developer Tools in Sidebar",
-        "description": "Choose which administrator accounts should see the Developer tools shortcut immediately above Settings.",
+        "description": "Choose which administrator accounts should see the Tools shortcut immediately above Settings.",
         "data": {
           "user_ids": "Show shortcut for"
         }
@@ -18,7 +18,7 @@
     "step": {
       "init": {
         "title": "Developer Tools in Sidebar",
-        "description": "Choose which administrator accounts should see the Developer tools shortcut immediately above Settings.",
+        "description": "Choose which administrator accounts should see the Tools shortcut immediately above Settings.",
         "data": {
           "user_ids": "Show shortcut for"
         }

@@ -2,6 +2,7 @@
   "use strict";
 
   const DOMAIN = "developer_tools_in_sidebar";
+  const VERSION = "1.0.0-beta-02";
   const WS_TYPE = `${DOMAIN}/config`;
   const ITEM_ID = "sidebar-developer-tools";
   const TOOLTIP_ID = `${ITEM_ID}-tooltip`;
@@ -15,28 +16,61 @@
     event: `${DOMAIN}_updated`,
   };
 
+  let shellObserver;
+  let observedMainRoot;
   let sidebarObserver;
   let observedSidebarRoot;
   let eventUnsubscribe;
   let bootTimer;
+  let sidebarRetryTimer;
   let refreshInFlight = false;
 
   const getHomeAssistant = () => document.querySelector("home-assistant");
 
   const getHass = () => getHomeAssistant()?.hass;
 
-  const getSidebar = () => {
+  const getMainRoot = () => {
     const homeAssistant = getHomeAssistant();
     const homeAssistantMain = homeAssistant?.shadowRoot?.querySelector(
       "home-assistant-main"
     );
-    const mainRoot = homeAssistantMain?.shadowRoot;
+
+    return homeAssistantMain?.shadowRoot || null;
+  };
+
+  const getSidebar = () => {
+    const mainRoot = getMainRoot();
 
     return (
       mainRoot?.querySelector("ha-sidebar") ||
       mainRoot?.querySelector("#drawer ha-sidebar") ||
       null
     );
+  };
+
+  const scheduleSidebarSync = () => {
+    if (sidebarRetryTimer) return;
+
+    sidebarRetryTimer = window.setTimeout(() => {
+      sidebarRetryTimer = undefined;
+      if (!syncSidebar()) {
+        scheduleSidebarSync();
+      }
+    }, RETRY_MS);
+  };
+
+  const ensureShellObserver = () => {
+    const mainRoot = getMainRoot();
+    if (!mainRoot) return false;
+
+    if (observedMainRoot !== mainRoot) {
+      shellObserver?.disconnect();
+      observedMainRoot = mainRoot;
+      shellObserver = new MutationObserver(() => syncSidebar());
+      shellObserver.observe(mainRoot, { childList: true, subtree: true });
+    }
+
+    return true;
   };
 
   const restoreSettingsSelection = (root) => {
@@ -101,6 +135,8 @@
   };
 
   const syncSidebar = () => {
+    ensureShellObserver();
+
     const sidebar = getSidebar();
     const root = sidebar?.shadowRoot;
     if (!sidebar || !root) return false;
@@ -116,8 +152,12 @@
     let button = root.querySelector(`#${ITEM_ID}`);
     let tooltip = root.querySelector(`#${TOOLTIP_ID}`);
 
-    if (!currentConfig.enabled || !settings) {
+    if (!currentConfig.enabled) {
       removeInjectedItem(root);
+      return true;
+    }
+
+    if (!settings) {
       return true;
     }
 
@@ -132,8 +172,12 @@
     button.setAttribute("href", currentConfig.path);
     button.href = currentConfig.path;
     button.querySelector("ha-icon")?.setAttribute("icon", currentConfig.icon);
+
     const label = button.querySelector(".item-text");
-    if (label) label.textContent = currentConfig.title;
+    if (label) {
+      label.textContent = currentConfig.title;
+    }
+
     tooltip.textContent = currentConfig.title;
 
     const parent = settings.parentNode;
@@ -157,13 +201,21 @@
     if (!hass?.callWS) return;
 
     refreshInFlight = true;
+
     try {
       const result = await hass.callWS({ type: WS_TYPE });
       currentConfig = { ...currentConfig, ...result };
-      syncSidebar();
+
+      if (!syncSidebar()) {
+        scheduleSidebarSync();
+      }
     } catch (error) {
       currentConfig = { ...currentConfig, enabled: false };
-      syncSidebar();
+
+      if (!syncSidebar()) {
+        scheduleSidebarSync();
+      }
+
       console.debug(`[${DOMAIN}] Backend is not ready yet`, error);
     } finally {
       refreshInFlight = false;
@@ -192,6 +244,7 @@
 
   const boot = async () => {
     const hass = getHass();
+
     if (!hass?.user || !hass?.callWS) {
       bootTimer = window.setTimeout(boot, RETRY_MS);
       return;
@@ -199,24 +252,57 @@
 
     await refreshConfig();
     await subscribeToConfigChanges();
-    syncSidebar();
+
+    if (!syncSidebar()) {
+      scheduleSidebarSync();
+    }
   };
 
-  window.addEventListener("location-changed", () => syncSidebar());
-  window.addEventListener("popstate", () => syncSidebar());
+  window.addEventListener("location-changed", () => {
+    if (!syncSidebar()) {
+      scheduleSidebarSync();
+    }
+  });
+
+  window.addEventListener("popstate", () => {
+    if (!syncSidebar()) {
+      scheduleSidebarSync();
+    }
+  });
+
   window.addEventListener("pageshow", () => {
     refreshConfig();
-    syncSidebar();
+
+    if (!syncSidebar()) {
+      scheduleSidebarSync();
+    }
   });
 
   window.addEventListener("pagehide", () => {
+    shellObserver?.disconnect();
+    shellObserver = undefined;
+    observedMainRoot = undefined;
+
     sidebarObserver?.disconnect();
     sidebarObserver = undefined;
     observedSidebarRoot = undefined;
-    if (typeof eventUnsubscribe === "function") eventUnsubscribe();
+
+    if (typeof eventUnsubscribe === "function") {
+      eventUnsubscribe();
+    }
     eventUnsubscribe = undefined;
-    if (bootTimer) window.clearTimeout(bootTimer);
+
+    if (bootTimer) {
+      window.clearTimeout(bootTimer);
+      bootTimer = undefined;
+    }
+
+    if (sidebarRetryTimer) {
+      window.clearTimeout(sidebarRetryTimer);
+      sidebarRetryTimer = undefined;
+    }
   });
 
+  console.info(`Developer Tools in Sidebar ${VERSION} loaded`);
   boot();
 })();

@@ -25,7 +25,7 @@ Until this repository is available in the default HACS list:
 7. Go to **Settings → Devices & services → Add integration**.
 8. Search for **Tools in Sidebar**.
 9. Choose the administrator accounts that should see the shortcut.
-10. Refresh the Home Assistant frontend once after the first install.
+10. Reload the Home Assistant frontend once after adding the user: **Windows:** `Ctrl + Shift + R` · **Mac:** `Cmd + Shift + R`.
 
 ## Per-user visibility
 

@@ -1,0 +1,28 @@
+{
+  "title": "Developer Tools in Sidebar",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Developer Tools in Sidebar",
+        "description": "Choose which administrator accounts should see the Developer tools shortcut immediately above Settings.",
+        "data": {
+          "user_ids": "Show shortcut for"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "Developer Tools in Sidebar can only be configured once."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Developer Tools in Sidebar",
+        "description": "Choose which administrator accounts should see the Developer tools shortcut immediately above Settings.",
+        "data": {
+          "user_ids": "Show shortcut for"
+        }
+      }
+    }
+  }
+}

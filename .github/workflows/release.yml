@@ -25,9 +25,9 @@ jobs:
           set -euo pipefail
           VERSION="$(tr -d '\r\n' < VERSION)"
 
-          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-beta-[0-9]{2})?$ ]]; then
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Invalid version: $VERSION"
-            echo "Expected x.y.z or x.y.z-beta-01"
+            echo "Expected x.y.z"
             exit 1
           fi
 
@@ -37,7 +37,7 @@ jobs:
           from pathlib import Path
 
           version = sys.argv[1]
-          manifest_path = Path("custom_components/developer_tools_in_sidebar/manifest.json")
+          manifest_path = Path("custom_components/tools_in_sidebar/manifest.json")
           manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
 
           if manifest.get("version") != version:
@@ -46,8 +46,8 @@ jobs:
               )
           PY
 
-          python -m compileall -q custom_components/developer_tools_in_sidebar
-          node --check custom_components/developer_tools_in_sidebar/frontend/developer-tools-in-sidebar.js
+          python -m compileall -q custom_components/tools_in_sidebar
+          node --check custom_components/tools_in_sidebar/frontend/tools-in-sidebar.js
 
           echo "RELEASE_VERSION=$VERSION" >> "$GITHUB_ENV"
 
@@ -61,12 +61,6 @@ jobs:
 
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "Release $TAG already exists, leaving it unchanged."
-          elif [[ "$RELEASE_VERSION" == *"-beta-"* ]]; then
-            gh release create "$TAG" \
-              --target "$GITHUB_SHA" \
-              --title "$TAG" \
-              --notes-file CHANGELOG.md \
-              --prerelease
           else
             gh release create "$TAG" \
               --target "$GITHUB_SHA" \
@@ -75,13 +69,16 @@ jobs:
               --latest
           fi
 
-      - name: Remove legacy beta release names
-        if: contains(env.RELEASE_VERSION, '-beta-')
+      - name: Remove legacy prereleases
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          if gh release view "v01" >/dev/null 2>&1; then
-            gh release delete "v01" --cleanup-tag --yes
-          fi
+          gh release list --limit 100 --json tagName,isPrerelease \
+            --jq '.[] | select(.isPrerelease) | .tagName' |
+          while read -r TAG; do
+            if [[ -n "$TAG" ]]; then
+              gh release delete "$TAG" --cleanup-tag --yes
+            fi
+          done

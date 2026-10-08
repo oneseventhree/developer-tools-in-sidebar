@@ -1,4 +1,4 @@
-"""Config flow for Developer Tools in Sidebar."""
+"""Config flow for Tools in Sidebar."""
 
 from __future__ import annotations
 
@@ -51,8 +51,8 @@ def _schema(
     )
 
 
-class DeveloperToolsSidebarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Developer Tools in Sidebar."""
+class ToolsSidebarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for Tools in Sidebar."""
 
     VERSION = 1
 
@@ -74,7 +74,7 @@ class DeveloperToolsSidebarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 if user_id in option_ids
             ]
             return self.async_create_entry(
-                title="Developer Tools in Sidebar",
+                title="Tools in Sidebar",
                 data={},
                 options={CONF_USER_IDS: selected},
             )
@@ -93,11 +93,11 @@ class DeveloperToolsSidebarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         config_entry: config_entries.ConfigEntry,
     ) -> config_entries.OptionsFlow:
         """Return the options flow."""
-        return DeveloperToolsSidebarOptionsFlow(config_entry)
+        return ToolsSidebarOptionsFlow(config_entry)
 
 
-class DeveloperToolsSidebarOptionsFlow(config_entries.OptionsFlow):
-    """Handle Developer Tools in Sidebar options."""
+class ToolsSidebarOptionsFlow(config_entries.OptionsFlow):
+    """Handle Tools in Sidebar options."""
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         """Initialize the options flow."""

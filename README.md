@@ -1,4 +1,4 @@
-# Developer Tools in Sidebar
+# Tools in Sidebar
 
 A HACS custom integration that restores **Tools** to the fixed section of the Home Assistant sidebar, immediately above **Settings**.
 
@@ -18,12 +18,12 @@ Until this repository is available in the default HACS list:
 
 1. Open HACS.
 2. Open the menu and choose **Custom repositories**.
-3. Add `https://github.com/oneseventhree/developer-tools-in-sidebar`.
+3. Add `https://github.com/oneseventhree/tools-in-sidebar`.
 4. Select **Integration** as the category.
-5. Install **Developer Tools in Sidebar**.
+5. Install **Tools in Sidebar**.
 6. Restart Home Assistant.
 7. Go to **Settings → Devices & services → Add integration**.
-8. Search for **Developer Tools in Sidebar**.
+8. Search for **Tools in Sidebar**.
 9. Choose the administrator accounts that should see the shortcut.
 10. Refresh the Home Assistant frontend once after the first install.
 
@@ -45,9 +45,9 @@ Home Assistant does not currently expose a supported extension point for inserti
 
 Because that uses an internal frontend implementation detail, a future Home Assistant frontend change may require an update to this integration.
 
-## Development status
+## Version
 
-This project is currently in beta. Beta releases use the `v1.0.0-beta-01`, `v1.0.0-beta-02` naming pattern.
+Current stable release: **v1.0.0**.
 
 ## License
 

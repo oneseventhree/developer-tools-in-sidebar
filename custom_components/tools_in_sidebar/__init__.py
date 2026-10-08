@@ -1,4 +1,4 @@
-"""Developer Tools in Sidebar integration."""
+"""Tools in Sidebar integration."""
 
 from __future__ import annotations
 
@@ -23,14 +23,14 @@ from .const import (
     TOOLS_PATH,
 )
 
-FRONTEND_FILE = Path(__file__).parent / "frontend" / "developer-tools-in-sidebar.js"
+FRONTEND_FILE = Path(__file__).parent / "frontend" / "tools-in-sidebar.js"
 
 DATA_STATIC_REGISTERED = "static_registered"
 DATA_EXTRA_JS_REGISTERED = "extra_js_registered"
 
 
 async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
-    """Set up Developer Tools in Sidebar."""
+    """Set up Tools in Sidebar."""
     hass.data.setdefault(
         DOMAIN,
         {
@@ -44,7 +44,7 @@ async def async_setup(hass: HomeAssistant, config: dict[str, Any]) -> bool:
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-    """Set up Developer Tools in Sidebar from a config entry."""
+    """Set up Tools in Sidebar from a config entry."""
     domain_data = hass.data.setdefault(
         DOMAIN,
         {

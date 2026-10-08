@@ -1,12 +1,12 @@
 (() => {
   "use strict";
 
-  const DOMAIN = "developer_tools_in_sidebar";
-  const VERSION = "1.0.0-beta-04";
+  const DOMAIN = "tools_in_sidebar";
+  const VERSION = "1.0.0";
   const WS_TYPE = `${DOMAIN}/config`;
-  const ITEM_ID = "sidebar-developer-tools";
-  const PATCH_FLAG = "__developerToolsInSidebarPatched";
-  const BUTTON_KEY = Symbol.for("developer_tools_in_sidebar.button");
+  const ITEM_ID = "sidebar-tools";
+  const PATCH_FLAG = "__toolsInSidebarPatched";
+  const BUTTON_KEY = Symbol.for("tools_in_sidebar.button");
   const RETRY_MS = 500;
 
   let currentConfig = {
@@ -49,7 +49,7 @@
   const createButton = () => {
     const button = document.createElement("ha-list-item-button");
     button.id = ITEM_ID;
-    button.classList.add("developer-tools-sidebar");
+    button.classList.add("tools-sidebar");
 
     const icon = document.createElement("ha-icon");
     icon.setAttribute("slot", "start");
@@ -101,7 +101,7 @@
 
       const originalResult = originalRenderConfiguration.call(
         this,
-        isTools ? "__developer_tools_in_sidebar__" : selectedPanel
+        isTools ? "__tools_in_sidebar__" : selectedPanel
       );
 
       if (!currentConfig.enabled || !this.hass?.user?.is_admin) {
@@ -212,6 +212,6 @@
     }
   });
 
-  console.info(`Developer Tools in Sidebar ${VERSION} loaded`);
+  console.info(`Tools in Sidebar ${VERSION} loaded`);
   boot();
 })();

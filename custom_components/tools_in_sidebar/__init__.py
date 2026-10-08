@@ -14,13 +14,16 @@ from homeassistant.config_entries import ConfigEntry, ConfigEntryState
 from homeassistant.core import HomeAssistant, callback
 
 from .const import (
+    CONF_TOOLS_SECTION,
     CONF_USER_IDS,
     DEFAULT_ICON,
     DEFAULT_TITLE,
+    DEFAULT_TOOLS_SECTION,
     DOMAIN,
     EVENT_CONFIG_UPDATED,
     FRONTEND_URL,
     TOOLS_PATH,
+    TOOLS_SECTIONS,
 )
 
 FRONTEND_FILE = Path(__file__).parent / "frontend" / "tools-in-sidebar.js"
@@ -86,7 +89,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def _async_entry_updated(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Notify loaded frontends that per-user visibility changed."""
+    """Notify loaded frontends that options changed."""
     hass.bus.async_fire(EVENT_CONFIG_UPDATED)
 
 
@@ -112,6 +115,7 @@ def websocket_get_config(
     """Return sidebar configuration for the currently authenticated user."""
     entry = _active_entry(hass)
     selected_user_ids: list[str] = []
+    tools_section = DEFAULT_TOOLS_SECTION
 
     if entry is not None:
         selected_user_ids = list(
@@ -120,6 +124,12 @@ def websocket_get_config(
                 entry.data.get(CONF_USER_IDS, []),
             )
         )
+        configured_section = entry.options.get(
+            CONF_TOOLS_SECTION,
+            entry.data.get(CONF_TOOLS_SECTION, DEFAULT_TOOLS_SECTION),
+        )
+        if configured_section in TOOLS_SECTIONS:
+            tools_section = configured_section
 
     user = connection.user
     enabled = bool(
@@ -135,7 +145,8 @@ def websocket_get_config(
             "enabled": enabled,
             "title": DEFAULT_TITLE,
             "icon": DEFAULT_ICON,
-            "path": TOOLS_PATH,
+            "path": f"{TOOLS_PATH}/{tools_section}",
+            "base_path": TOOLS_PATH,
             "event": EVENT_CONFIG_UPDATED,
         },
     )

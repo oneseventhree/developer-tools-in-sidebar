@@ -15,7 +15,23 @@ from homeassistant.helpers.selector import (
     SelectSelectorMode,
 )
 
-from .const import CONF_USER_IDS, DOMAIN
+from .const import (
+    CONF_TOOLS_SECTION,
+    CONF_USER_IDS,
+    DEFAULT_TOOLS_SECTION,
+    DOMAIN,
+    TOOLS_SECTIONS,
+)
+
+TOOLS_SECTION_OPTIONS = [
+    SelectOptionDict(value="yaml", label="YAML"),
+    SelectOptionDict(value="state", label="States"),
+    SelectOptionDict(value="action", label="Actions"),
+    SelectOptionDict(value="template", label="Template"),
+    SelectOptionDict(value="event", label="Events"),
+    SelectOptionDict(value="statistics", label="Statistics"),
+    SelectOptionDict(value="assist", label="Assist"),
+]
 
 
 async def _admin_user_options(hass) -> list[SelectOptionDict]:
@@ -33,8 +49,9 @@ async def _admin_user_options(hass) -> list[SelectOptionDict]:
 def _schema(
     options: list[SelectOptionDict],
     selected: list[str],
+    tools_section: str,
 ) -> vol.Schema:
-    """Build the user selector schema."""
+    """Build the options schema."""
     return vol.Schema(
         {
             vol.Optional(
@@ -46,9 +63,25 @@ def _schema(
                     multiple=True,
                     mode=SelectSelectorMode.DROPDOWN,
                 )
-            )
+            ),
+            vol.Required(
+                CONF_TOOLS_SECTION,
+                default=tools_section,
+            ): SelectSelector(
+                SelectSelectorConfig(
+                    options=TOOLS_SECTION_OPTIONS,
+                    mode=SelectSelectorMode.DROPDOWN,
+                )
+            ),
         }
     )
+
+
+def _validated_tools_section(value: str | None) -> str:
+    """Return a valid Tools section."""
+    if value in TOOLS_SECTIONS:
+        return value
+    return DEFAULT_TOOLS_SECTION
 
 
 class ToolsSidebarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -73,10 +106,16 @@ class ToolsSidebarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 for user_id in user_input.get(CONF_USER_IDS, [])
                 if user_id in option_ids
             ]
+            tools_section = _validated_tools_section(
+                user_input.get(CONF_TOOLS_SECTION)
+            )
             return self.async_create_entry(
                 title="Tools in Sidebar",
                 data={},
-                options={CONF_USER_IDS: selected},
+                options={
+                    CONF_USER_IDS: selected,
+                    CONF_TOOLS_SECTION: tools_section,
+                },
             )
 
         current_user_id = self.context.get("user_id")
@@ -84,7 +123,7 @@ class ToolsSidebarConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="user",
-            data_schema=_schema(options, defaults),
+            data_schema=_schema(options, defaults, DEFAULT_TOOLS_SECTION),
         )
 
     @staticmethod
@@ -107,7 +146,7 @@ class ToolsSidebarOptionsFlow(config_entries.OptionsFlow):
         self,
         user_input: dict[str, Any] | None = None,
     ) -> config_entries.ConfigFlowResult:
-        """Edit the users who receive the sidebar shortcut."""
+        """Edit shortcut visibility and the default Tools section."""
         options = await _admin_user_options(self.hass)
         option_ids = {option["value"] for option in options}
 
@@ -117,9 +156,15 @@ class ToolsSidebarOptionsFlow(config_entries.OptionsFlow):
                 for user_id in user_input.get(CONF_USER_IDS, [])
                 if user_id in option_ids
             ]
+            tools_section = _validated_tools_section(
+                user_input.get(CONF_TOOLS_SECTION)
+            )
             return self.async_create_entry(
                 title="",
-                data={CONF_USER_IDS: selected},
+                data={
+                    CONF_USER_IDS: selected,
+                    CONF_TOOLS_SECTION: tools_section,
+                },
             )
 
         selected = list(
@@ -128,8 +173,17 @@ class ToolsSidebarOptionsFlow(config_entries.OptionsFlow):
                 self._entry.data.get(CONF_USER_IDS, []),
             )
         )
+        tools_section = _validated_tools_section(
+            self._entry.options.get(
+                CONF_TOOLS_SECTION,
+                self._entry.data.get(
+                    CONF_TOOLS_SECTION,
+                    DEFAULT_TOOLS_SECTION,
+                ),
+            )
+        )
 
         return self.async_show_form(
             step_id="init",
-            data_schema=_schema(options, selected),
+            data_schema=_schema(options, selected, tools_section),
         )

@@ -2,7 +2,7 @@
   "use strict";
 
   const DOMAIN = "tools_in_sidebar";
-  const VERSION = "1.0.0";
+  const VERSION = "1.1.0";
   const WS_TYPE = `${DOMAIN}/config`;
   const ITEM_ID = "sidebar-tools";
   const PATCH_FLAG = "__toolsInSidebarPatched";
@@ -13,7 +13,8 @@
     enabled: false,
     title: "Tools",
     icon: "mdi:hammer",
-    path: "/config/tools",
+    path: "/config/tools/yaml",
+    base_path: "/config/tools",
     event: `${DOMAIN}_updated`,
   };
 
@@ -97,7 +98,7 @@
     prototype._renderConfiguration = function (selectedPanel) {
       const isTools =
         currentConfig.enabled &&
-        window.location.pathname.startsWith(currentConfig.path);
+        window.location.pathname.startsWith(currentConfig.base_path);
 
       const originalResult = originalRenderConfiguration.call(
         this,

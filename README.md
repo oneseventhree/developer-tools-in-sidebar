@@ -2,7 +2,7 @@
 
 A HACS custom integration that restores **Tools** to the fixed section of the Home Assistant sidebar, immediately above **Settings**.
 
-The shortcut opens Home Assistant's real `/config/tools` page. It does not iframe, copy, or replace Home Assistant's Tools interface.
+The shortcut opens Home Assistant's real Tools interface. It does not iframe, copy, or replace Home Assistant's Tools interface.
 
 ## Preview
 
@@ -13,8 +13,9 @@ The shortcut opens Home Assistant's real `/config/tools` page. It does not ifram
 - Restores **Tools** directly above **Settings**.
 - Uses Home Assistant's sidebar components so the item follows the active theme and sidebar layout.
 - Lets you choose which **administrator accounts** see the shortcut.
+- Lets you choose which Tools section opens when the sidebar shortcut is selected: **YAML, States, Actions, Template, Events, Statistics, or Assist**.
 - Does not change Home Assistant permissions. It only controls shortcut visibility.
-- Updates visibility when the integration options are changed.
+- Updates visibility and the selected Tools section when the integration options are changed.
 
 ## Installation with HACS
 
@@ -28,8 +29,17 @@ Until this repository is available in the default HACS list:
 6. Restart Home Assistant.
 7. Go to **Settings → Devices & services → Add integration**.
 8. Search for **Tools in Sidebar**.
-9. Choose the administrator accounts that should see the shortcut.
+9. Choose the administrator accounts that should see the shortcut and the Tools section it should open.
 10. Reload the Home Assistant frontend once after adding the user: **Windows:** `Ctrl + Shift + R` · **Mac:** `Cmd + Shift + R`.
+
+## Options
+
+Open **Settings → Devices & services → Tools in Sidebar → Configure** to change:
+
+- **Show shortcut for**: the administrator accounts that see the sidebar shortcut.
+- **Open Tools at**: the Tools section opened by the shortcut.
+
+Existing installations default to **YAML** until another section is selected.
 
 ## Per-user visibility
 
@@ -37,11 +47,11 @@ Only administrator accounts are offered in the integration's user selector.
 
 If an administrator is selected, **Tools** appears immediately above **Settings** for that user. Unselected users do not get the shortcut.
 
-This setting controls visibility only. It does not grant or revoke Home Assistant permissions. An administrator who is not selected can still navigate directly to `/config/tools`.
+This setting controls visibility only. It does not grant or revoke Home Assistant permissions. An administrator who is not selected can still navigate directly to the Tools pages.
 
 ## Compatibility
 
-The integration targets Home Assistant **2026.8.0 or newer**, where the current Tools route is `/config/tools`.
+The integration targets Home Assistant **2026.8.0 or newer**.
 
 ## Frontend implementation
 
@@ -51,7 +61,7 @@ Because that uses an internal frontend implementation detail, a future Home Assi
 
 ## Version
 
-Current stable release: **v1.0.0**.
+Current stable release: **v1.1.0**.
 
 ## License
 

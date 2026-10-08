@@ -4,9 +4,10 @@
     "step": {
       "user": {
         "title": "Tools in Sidebar",
-        "description": "Choose which administrator accounts should see the Tools shortcut immediately above Settings.",
+        "description": "Choose which administrator accounts should see the Tools shortcut and which Tools section opens when it is selected.",
         "data": {
-          "user_ids": "Show shortcut for"
+          "user_ids": "Show shortcut for",
+          "tools_section": "Open Tools at"
         }
       }
     },
@@ -18,9 +19,10 @@
     "step": {
       "init": {
         "title": "Tools in Sidebar",
-        "description": "Choose which administrator accounts should see the Tools shortcut immediately above Settings.",
+        "description": "Choose which administrator accounts should see the Tools shortcut and which Tools section opens when it is selected.",
         "data": {
-          "user_ids": "Show shortcut for"
+          "user_ids": "Show shortcut for",
+          "tools_section": "Open Tools at"
         }
       }
     }

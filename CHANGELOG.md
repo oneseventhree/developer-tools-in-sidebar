@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.1.0
+
+- Add an **Open Tools at** option for choosing which Tools section opens from the sidebar shortcut.
+- Support YAML, States, Actions, Template, Events, Statistics, and Assist.
+- Keep the Tools sidebar item selected while viewing any Tools section.
+- Apply option changes without requiring the integration to be re-added.
+
 ## v1.0.0
 
 - Initial stable release.

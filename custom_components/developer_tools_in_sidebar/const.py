@@ -4,7 +4,7 @@ DOMAIN = "developer_tools_in_sidebar"
 
 CONF_USER_IDS = "user_ids"
 
-DEFAULT_TITLE = "Developer tools"
+DEFAULT_TITLE = "Tools"
 DEFAULT_ICON = "mdi:hammer"
 TOOLS_PATH = "/config/tools"
 

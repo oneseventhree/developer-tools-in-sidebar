@@ -2,7 +2,7 @@
   "use strict";
 
   const DOMAIN = "developer_tools_in_sidebar";
-  const VERSION = "1.0.0-beta-03";
+  const VERSION = "1.0.0-beta-04";
   const WS_TYPE = `${DOMAIN}/config`;
   const ITEM_ID = "sidebar-developer-tools";
   const PATCH_FLAG = "__developerToolsInSidebarPatched";
@@ -11,7 +11,7 @@
 
   let currentConfig = {
     enabled: false,
-    title: "Developer tools",
+    title: "Tools",
     icon: "mdi:hammer",
     path: "/config/tools",
     event: `${DOMAIN}_updated`,

@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.0.0-beta-04
+
+- Restore the sidebar label to **Tools**, matching the older Home Assistant sidebar wording.
+- Keep the integration name as Developer Tools in Sidebar while the visible shortcut remains simply **Tools**.
+- Keep the safer sidebar render-cycle implementation introduced in beta-03.
+
 ## v1.0.0-beta-03
 
 - Remove the MutationObserver-based sidebar injection that could repeatedly reinsert DOM on Home Assistant state updates and eventually destabilise the frontend.

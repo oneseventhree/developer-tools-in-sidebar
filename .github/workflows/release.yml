@@ -25,8 +25,9 @@ jobs:
           set -euo pipefail
           VERSION="$(tr -d '\r\n' < VERSION)"
 
-          if [[ ! "$VERSION" =~ ^([0-9]{2}|[0-9]+\.[0-9]+)$ ]]; then
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-beta-[0-9]{2})?$ ]]; then
             echo "Invalid version: $VERSION"
+            echo "Expected x.y.z or x.y.z-beta-01"
             exit 1
           fi
 
@@ -60,19 +61,27 @@ jobs:
 
           if gh release view "$TAG" >/dev/null 2>&1; then
             echo "Release $TAG already exists, leaving it unchanged."
-            exit 0
-          fi
-
-          if [[ "$RELEASE_VERSION" =~ ^[0-9]{2}$ ]]; then
+          elif [[ "$RELEASE_VERSION" == *"-beta-"* ]]; then
             gh release create "$TAG" \
               --target "$GITHUB_SHA" \
-              --title "V${RELEASE_VERSION}" \
+              --title "$TAG" \
               --notes-file CHANGELOG.md \
               --prerelease
           else
             gh release create "$TAG" \
               --target "$GITHUB_SHA" \
-              --title "V${RELEASE_VERSION}" \
+              --title "$TAG" \
               --notes-file CHANGELOG.md \
               --latest
+          fi
+
+      - name: Remove legacy beta release names
+        if: contains(env.RELEASE_VERSION, '-beta-')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if gh release view "v01" >/dev/null 2>&1; then
+            gh release delete "v01" --cleanup-tag --yes
           fi

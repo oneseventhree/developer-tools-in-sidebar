@@ -1,0 +1,78 @@
+name: Publish release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - VERSION
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate version and integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(tr -d '\r\n' < VERSION)"
+
+          if [[ ! "$VERSION" =~ ^([0-9]{2}|[0-9]+\.[0-9]+)$ ]]; then
+            echo "Invalid version: $VERSION"
+            exit 1
+          fi
+
+          python - "$VERSION" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          version = sys.argv[1]
+          manifest_path = Path("custom_components/developer_tools_in_sidebar/manifest.json")
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+          if manifest.get("version") != version:
+              raise SystemExit(
+                  f"manifest.json version {manifest.get('version')!r} does not match VERSION {version!r}"
+              )
+          PY
+
+          python -m compileall -q custom_components/developer_tools_in_sidebar
+          node --check custom_components/developer_tools_in_sidebar/frontend/developer-tools-in-sidebar.js
+
+          echo "RELEASE_VERSION=$VERSION" >> "$GITHUB_ENV"
+
+      - name: Create GitHub release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="v${RELEASE_VERSION}"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists, leaving it unchanged."
+            exit 0
+          fi
+
+          if [[ "$RELEASE_VERSION" =~ ^[0-9]{2}$ ]]; then
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "V${RELEASE_VERSION}" \
+              --notes-file CHANGELOG.md \
+              --prerelease
+          else
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "V${RELEASE_VERSION}" \
+              --notes-file CHANGELOG.md \
+              --latest
+          fi

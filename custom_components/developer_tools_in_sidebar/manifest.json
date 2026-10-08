@@ -1,0 +1,17 @@
+{
+  "domain": "developer_tools_in_sidebar",
+  "name": "Developer Tools in Sidebar",
+  "codeowners": [
+    "@oneseventhree"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "frontend",
+    "http"
+  ],
+  "documentation": "https://github.com/oneseventhree/developer-tools-in-sidebar",
+  "integration_type": "service",
+  "iot_class": "local_push",
+  "issue_tracker": "https://github.com/oneseventhree/developer-tools-in-sidebar/issues",
+  "version": "01"
+}

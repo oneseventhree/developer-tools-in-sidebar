@@ -4,6 +4,10 @@ A HACS custom integration that restores **Tools** to the fixed section of the Ho
 
 The shortcut opens Home Assistant's real `/config/tools` page. It does not iframe, copy, or replace Home Assistant's Tools interface.
 
+## Preview
+
+![Tools in Sidebar preview](images/tools-in-sidebar-preview.png)
+
 ## Features
 
 - Restores **Tools** directly above **Settings**.

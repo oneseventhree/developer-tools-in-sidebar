@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.0.0-beta-03
+
+- Remove the MutationObserver-based sidebar injection that could repeatedly reinsert DOM on Home Assistant state updates and eventually destabilise the frontend.
+- Render the Developer tools shortcut through Home Assistant's own sidebar render cycle instead of mutating the rendered sidebar DOM.
+- Keep Settings unselected while the native Tools page is open.
+- Preserve per-user visibility and the fixed position immediately above Settings.
+
 ## v1.0.0-beta-02
 
 - Fix the sidebar shortcut not appearing when the frontend module loads before Home Assistant has rendered the sidebar.

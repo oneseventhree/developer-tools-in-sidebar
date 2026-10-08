@@ -1,12 +1,12 @@
 # Developer Tools in Sidebar
 
-A HACS custom integration that restores **Developer tools** to the fixed section of the Home Assistant sidebar, immediately above **Settings**.
+A HACS custom integration that restores **Tools** to the fixed section of the Home Assistant sidebar, immediately above **Settings**.
 
 The shortcut opens Home Assistant's real `/config/tools` page. It does not iframe, copy, or replace Home Assistant's Tools interface.
 
 ## Features
 
-- Restores **Developer tools** directly above **Settings**.
+- Restores **Tools** directly above **Settings**.
 - Uses Home Assistant's sidebar components so the item follows the active theme and sidebar layout.
 - Lets you choose which **administrator accounts** see the shortcut.
 - Does not change Home Assistant permissions. It only controls shortcut visibility.
@@ -31,7 +31,7 @@ Until this repository is available in the default HACS list:
 
 Only administrator accounts are offered in the integration's user selector.
 
-If an administrator is selected, **Developer tools** appears immediately above **Settings** for that user. Unselected users do not get the shortcut.
+If an administrator is selected, **Tools** appears immediately above **Settings** for that user. Unselected users do not get the shortcut.
 
 This setting controls visibility only. It does not grant or revoke Home Assistant permissions. An administrator who is not selected can still navigate directly to `/config/tools`.
 
@@ -41,13 +41,13 @@ The integration targets Home Assistant **2026.8.0 or newer**, where the current 
 
 ## Frontend implementation
 
-Home Assistant does not currently expose a supported extension point for inserting third-party items into the fixed bottom section of the sidebar. This integration therefore anchors the shortcut to Home Assistant's current `#sidebar-config` element and inserts the item immediately before it.
+Home Assistant does not currently expose a supported extension point for inserting third-party items into the fixed bottom section of the sidebar. This integration therefore hooks Home Assistant's current sidebar render cycle and renders the shortcut immediately before Settings.
 
-Because that is an internal frontend element, a future Home Assistant frontend change may require an update to this integration.
+Because that uses an internal frontend implementation detail, a future Home Assistant frontend change may require an update to this integration.
 
 ## Development status
 
-This project is currently in beta. The first beta is version **01**.
+This project is currently in beta. Beta releases use the `v1.0.0-beta-01`, `v1.0.0-beta-02` naming pattern.
 
 ## License
 

@@ -1,6 +1,6 @@
 # Changelog
 
-## V01
+## v1.0.0-beta-01
 
 - Initial beta release.
 - Restore Developer tools to the fixed Home Assistant sidebar directly above Settings.
